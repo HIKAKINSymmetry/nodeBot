@@ -1,12 +1,12 @@
-declare namespace YTDataAPI {
+declare module YTDataAPI {
 	type contentDetails = {
 		videoId: string,
 		startAt: string,
 		endAt: string,
 		note: string,
-		videoPublishedAt: unknown
+		videoPublishedAt: any
 	};
-
+	
 	/**
 	 * サムネイル画像
 	 */
@@ -15,12 +15,12 @@ declare namespace YTDataAPI {
 		width: number,
 		height: number
 	};
-
+	
 	/**
 	 * 動画単体の情報の中身
 	 */
 	export type snippet = {
-		publishedAt: unknown,
+		publishedAt: any,
 		channelId: string,
 		title: string, // 動画タイトル
 		description: string, // 動画説明文
@@ -39,30 +39,30 @@ declare namespace YTDataAPI {
 			videoId: string // 動画のID
 		}
 	};
-
+	
 	/**
 	 * 動画の単体情報のあつまり？詳しいのは `snippet` にある
 	 */
 	export type PlaylistItem = {
 		kind: 'youtube#playlistItem',
-		etag: unknown, // つかわない
+		etag: any, // つかわない
 		id: string,
 		snippet: snippet
 		contentDetails: contentDetails
 	};
-
+	
 	/**
 	 * API から帰ってくるJSONの実体
 	 * https://developers.google.com/youtube/v3/docs/playlistItems/list
 	 */
 	export type Playlist = {
 		kind: 'youtube#playlistItemListResponse',
-		etag: unknown, // つかわない
+		etag: any, // つかわない
 		nextPageToken: string,
 		prevPageToken: string,
-
-		pageInfo: unknown, // 使わない
+		
+		pageInfo: any, // 使わない
 		items: PlaylistItem[]
 	};
-
+	
 }
