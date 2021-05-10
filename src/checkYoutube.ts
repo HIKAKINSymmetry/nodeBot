@@ -68,7 +68,7 @@ type pickedMovieDetail = {
 	});
 };
 
-const checkYoutube = () => {
+const checkYoutube = () : Promise<pickedMovieDetail[]> => {
 
 	const playlistIds =  [
 		'UUlLV6D8S4CrVJL64-aQvwTw', // Uploads from HIKAKIN
@@ -81,13 +81,17 @@ const checkYoutube = () => {
 		return fetchPlaylistItem(playlistId);
 	});
 
-	Promise.all(fetchingPlaylists).then((fetchedPlaylists) => {
-		// 4つのチャンネルの情報を回す
-		fetchedPlaylists.forEach((playlist: YTDataAPI.PlaylistItem[] | string): void => {
-			if(typeof playlist !== 'string'){
-				console.log(pickMoviesDetail(playlist));
-			}
+	return new Promise((resolve, _reject) => {
+		
+		Promise.all(fetchingPlaylists).then((fetchedPlaylists) => {
+			// 4つのチャンネルの情報を回す
+			fetchedPlaylists.forEach((playlist: YTDataAPI.PlaylistItem[] | string): void => {
+				if(typeof playlist !== 'string'){
+					resolve(pickMoviesDetail(playlist));
+				}
+			});
 		});
+	
 	});
 	
 };
