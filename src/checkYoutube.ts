@@ -59,6 +59,10 @@ import envYaml from './modules/envReader';
 	});
 };
 
+/**
+ * YoutubeからHIKAKINの投稿した動画のデータを取得してチャンネルごとに配列に分けて返す
+ * @returns {Promise<Array<DB.MovieDetail[]>>} 各プレイリストの取得結果 エラーが出た場合は格納されない
+ */
 const checkYoutube = () : Promise<Array<DB.MovieDetail[]>> => {
 
 	const playlistIds =  [
