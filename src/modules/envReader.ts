@@ -30,29 +30,29 @@ type dotEnvYaml = {
  * GCPのプロジェクトIDを `.envs/env.yaml` から取得
  */
 const GCPProjectID = () : string => {
-  const yamlText = fs.readFileSync('.envs/env.yaml', 'utf8');
+	const yamlText = fs.readFileSync('.envs/env.yaml', 'utf8');
 
 	const envs = yaml.load(yamlText) as dotEnvYaml;
 
 	return envs.gcpProjectName;
-}
+};
 
 /**
  * TwitterのAPIアクセスに必要なデータ一式を取得
  */
 const TwitterAPI = () : twitterAPIKEY => {
-  const yamlText = fs.readFileSync('.envs/env.yaml', 'utf8');
+	const yamlText = fs.readFileSync('.envs/env.yaml', 'utf8');
 
 	const envs = yaml.load(yamlText) as dotEnvYaml;
 
 	return envs.twitterAPI;
-}
+};
 
 /**
  * youtubeDataAPIのAPIキーを返す
  */
 const youtubeDataAPI = () : youtubeDataAPIKEY => {
-  const yamlText: string = fs.readFileSync('.envs/env.yaml', 'utf8');
+	const yamlText: string = fs.readFileSync('.envs/env.yaml', 'utf8');
 
 	const envs = yaml.load(yamlText) as dotEnvYaml;
 	return envs.youtubeDataAPI;
