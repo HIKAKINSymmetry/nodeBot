@@ -1,19 +1,9 @@
 import request from 'request';
 import envYaml from './modules/envReader';
 
-/**
- * 必要な情報だけ切り抜かれた動画単体の情報
- */
-type pickedMovieDetail = {
-	videoId: string,
-	title: string,
-	thumb: string | undefined, // 一応 `undefined` も入れてるけどほぼ意味ない
-	publishedAt: string
-}
-
 
 /**
- * YoutubeDataAPI からプレイリストの内容を取得する  
+ * YoutubeDataAPI からプレイリストの内容を取得する
  * https://developers.google.com/youtube/v3/docs/playlistItems/list
  * @param {string} playlistId プレイリストのID
  * @return {Promise<YTDataAPI.PlailistItem[] | string>} エラーの場合はエラーのメッセージを返す
@@ -48,8 +38,8 @@ type pickedMovieDetail = {
 
 /**
  * 動画のオブジェクト群の必要なデータだけ切り抜いて渡す
- * @param {Array<YTDataAPI.playlistItem>} movies APIから引っ張ってきたプレイリストのデータ 
- * @returns {Array<pickedMovieDetail>} 必要なデータだけ切り抜いたオブジェクト群 
+ * @param {Array<YTDataAPI.playlistItem>} movies APIから引っ張ってきたプレイリストのデータ
+ * @returns {Array<pickedMovieDetail>} 必要なデータだけ切り抜いたオブジェクト群
  */
  const pickMoviesDetail = (movies: YTDataAPI.PlaylistItem[]): Array<pickedMovieDetail> => {
 
@@ -91,9 +81,9 @@ const checkYoutube = () : Promise<pickedMovieDetail[]> => {
 				}
 			});
 		});
-	
+
 	});
-	
+
 };
 
 export default checkYoutube;
