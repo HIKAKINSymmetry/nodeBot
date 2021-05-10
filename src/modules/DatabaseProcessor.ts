@@ -15,7 +15,7 @@ import FireStore, { Firestore } from '@google-cloud/firestore';
 	const database = new Firestore(fireStoreCredentials);
 
 	movies.forEach((movieInfo) => {
-		console.log(movieInfo);
+		console.log(`データベースに記述中 : ${movieInfo.videoId}/${movieInfo.title} `)
 		database.collection('movies').doc().set(movieInfo);
 	});
 };
