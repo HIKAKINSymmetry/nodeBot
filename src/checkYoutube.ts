@@ -41,7 +41,7 @@ import envYaml from './modules/envReader';
  * @param {Array<YTDataAPI.playlistItem>} movies APIから引っ張ってきたプレイリストのデータ
  * @returns {Array<pickedMovieDetail>} 必要なデータだけ切り抜いたオブジェクト群
  */
- const pickMoviesDetail = (movies: YTDataAPI.PlaylistItem[]): Array<pickedMovieDetail> => {
+ const pickMoviesDetail = (movies: YTDataAPI.PlaylistItem[]): Array<DB.MovieDetail> => {
 
 	return movies.map((movie: YTDataAPI.PlaylistItem) => {
 		// `maxres` のキーが無い旧時代の動画があることがあるので
@@ -58,7 +58,7 @@ import envYaml from './modules/envReader';
 	});
 };
 
-const checkYoutube = () : Promise<pickedMovieDetail[]> => {
+const checkYoutube = () : Promise<DB.MovieDetail[]> => {
 
 	const playlistIds =  [
 		'UUlLV6D8S4CrVJL64-aQvwTw', // Uploads from HIKAKIN
