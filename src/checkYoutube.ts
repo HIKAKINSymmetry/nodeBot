@@ -82,7 +82,7 @@ const checkYoutube = () : Promise<pickedMovieDetail[]> => {
 	});
 
 	return new Promise((resolve, _reject) => {
-		
+
 		Promise.all(fetchingPlaylists).then((fetchedPlaylists) => {
 			// 4つのチャンネルの情報を回す
 			fetchedPlaylists.forEach((playlist: YTDataAPI.PlaylistItem[] | string): void => {
@@ -96,4 +96,4 @@ const checkYoutube = () : Promise<pickedMovieDetail[]> => {
 	
 };
 
-checkYoutube();
+export default checkYoutube;
