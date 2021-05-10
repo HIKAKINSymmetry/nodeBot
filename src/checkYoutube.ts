@@ -1,4 +1,3 @@
-import { type } from 'os';
 import request from 'request';
 import envYaml from './modules/envReader';
 
@@ -76,9 +75,9 @@ const checkYoutube = () : Promise<Array<DB.MovieDetail[]>> => {
 		return fetchPlaylistItem(playlistId);
 	});
 
-	return new Promise((resolve, _reject) => {
+	return new Promise((resolve) => {
 
-		Promise.all(fetchingPlaylists).then((fetchedPlaylists) => {
+		void Promise.all(fetchingPlaylists).then((fetchedPlaylists) => {
 			// 4つのチャンネルの情報を回す
 			const pickedPlaylistsData = fetchedPlaylists.map((playlistItems) => {
 				if(typeof playlistItems !== 'string'){
