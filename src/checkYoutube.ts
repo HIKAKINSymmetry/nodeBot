@@ -15,6 +15,8 @@ type pickedMovieDetail = {
 /**
  * YoutubeDataAPI からプレイリストの内容を取得する  
  * https://developers.google.com/youtube/v3/docs/playlistItems/list
+ * @param {string} playlistId プレイリストのID
+ * @return {Promise<YTDataAPI.PlailistItem[] | string>} エラーの場合はエラーのメッセージを返す
  */
  const fetchPlaylistItem = (playlistId: string) : Promise<YTDataAPI.PlaylistItem[]| string>=> {
 	const Endpoint = 'https://www.googleapis.com/youtube/v3/playlistItems';
@@ -47,7 +49,7 @@ type pickedMovieDetail = {
 /**
  * 動画のオブジェクト群の必要なデータだけ切り抜いて渡す
  * @param {Array<YTDataAPI.playlistItem>} movies APIから引っ張ってきたプレイリストのデータ 
- * @returns {Array<object>} 
+ * @returns {Array<pickedMovieDetail>} 必要なデータだけ切り抜いたオブジェクト群 
  */
  const pickMoviesDetail = (movies: YTDataAPI.PlaylistItem[]): Array<pickedMovieDetail> => {
 
