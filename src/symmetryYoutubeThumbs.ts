@@ -14,7 +14,8 @@ const symmetryYoutubeThumb = async () => {
 	};
 
 	const database = new Firestore(fireStoreCredentials);
-	const CollectionSnapshot = await database.collection('movies').get();
+	// 1件のみ取得
+	const CollectionSnapshot = await database.collection('movies').limit(1).get();
 
 	if(CollectionSnapshot.empty){
 		// データベースに何も入ってないので初期化的にデータを追加する
