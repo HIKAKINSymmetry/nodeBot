@@ -1,5 +1,4 @@
-
-declare module DB{
+declare namespace DB{
 	/**
 	 * 必要な情報だけ切り抜かれた動画単体の情報
 	 */

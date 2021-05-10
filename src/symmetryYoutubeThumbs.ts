@@ -9,6 +9,7 @@ const symmetryYoutubeThumb = async () => {
 
 	const fireStoreCredentials: FireStore.Settings = {
 		projectId: EnvYaml.GCPProjectID(),
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		keyFilename: `${process.env.PWD}/.envs/serviceAccount.json`
 	};
 
@@ -20,8 +21,8 @@ const symmetryYoutubeThumb = async () => {
 		console.log('データべース内部に何も入っていません 初期化作業を開始します');
 		const fetchHikakinChannelsData = checkYoutube();
 
-		fetchHikakinChannelsData.then((PlaylistsData) => {
-			PlaylistsData.forEach((PlaylistItems) => {
+		void fetchHikakinChannelsData.then((PlaylistsData) => {
+			void PlaylistsData.forEach((PlaylistItems) => {
 				putMovies(PlaylistItems);
 			});
 		});
@@ -33,4 +34,4 @@ const symmetryYoutubeThumb = async () => {
 
 };
 
-symmetryYoutubeThumb();
+void symmetryYoutubeThumb();

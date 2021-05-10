@@ -1,4 +1,3 @@
-import { type } from 'os';
 import request from 'request';
 import envYaml from './modules/envReader';
 
@@ -9,7 +8,7 @@ import envYaml from './modules/envReader';
  * @param {string} playlistId プレイリストのID
  * @return {Promise<YTDataAPI.PlailistItem[] | string>} エラーの場合はエラーのメッセージを返す
  */
- const fetchPlaylistItem = (playlistId: string) : Promise<YTDataAPI.PlaylistItem[]| string>=> {
+const fetchPlaylistItem = (playlistId: string) : Promise<YTDataAPI.PlaylistItem[]| string> => {
 	const Endpoint = 'https://www.googleapis.com/youtube/v3/playlistItems';
 
 	const requestParams = {
@@ -27,13 +26,13 @@ import envYaml from './modules/envReader';
 	return new Promise((resolve, reject) => {
 		request(requestParams,
 			(Error: Error, response: request.Response, body: YTDataAPI.Playlist) => {
-			if(!Error && response.statusCode === 200){
-				resolve(body.items);
-			}
-			else{
-				reject(Error.message);
-			}
-		});
+				if(!Error && response.statusCode === 200){
+					resolve(body.items);
+				}
+				else{
+					reject(Error.message);
+				}
+			});
 	});
 };
 
@@ -42,7 +41,7 @@ import envYaml from './modules/envReader';
  * @param {Array<YTDataAPI.playlistItem>} movies APIから引っ張ってきたプレイリストのデータ
  * @returns {Array<pickedMovieDetail>} 必要なデータだけ切り抜いたオブジェクト群
  */
- const pickMoviesDetail = (movies: YTDataAPI.PlaylistItem[]): Array<DB.MovieDetail> => {
+const pickMoviesDetail = (movies: YTDataAPI.PlaylistItem[]): Array<DB.MovieDetail> => {
 
 	return movies.map((movie: YTDataAPI.PlaylistItem) => {
 		// `maxres` のキーが無い旧時代の動画があることがあるので
@@ -76,9 +75,9 @@ const checkYoutube = () : Promise<Array<DB.MovieDetail[]>> => {
 		return fetchPlaylistItem(playlistId);
 	});
 
-	return new Promise((resolve, _reject) => {
+	return new Promise((resolve) => {
 
-		Promise.all(fetchingPlaylists).then((fetchedPlaylists) => {
+		void Promise.all(fetchingPlaylists).then((fetchedPlaylists) => {
 			// 4つのチャンネルの情報を回す
 			const pickedPlaylistsData = fetchedPlaylists.map((playlistItems) => {
 				if(typeof playlistItems !== 'string'){
