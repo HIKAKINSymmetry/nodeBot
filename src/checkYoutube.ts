@@ -1,3 +1,4 @@
+import { type } from 'os';
 import request from 'request';
 import envYaml from './modules/envReader';
 
@@ -58,7 +59,7 @@ import envYaml from './modules/envReader';
 	});
 };
 
-const checkYoutube = () : Promise<DB.MovieDetail[]> => {
+const checkYoutube = () : Promise<Array<DB.MovieDetail[]>> => {
 
 	const playlistIds =  [
 		'UUlLV6D8S4CrVJL64-aQvwTw', // Uploads from HIKAKIN
@@ -75,11 +76,16 @@ const checkYoutube = () : Promise<DB.MovieDetail[]> => {
 
 		Promise.all(fetchingPlaylists).then((fetchedPlaylists) => {
 			// 4つのチャンネルの情報を回す
-			fetchedPlaylists.forEach((playlist: YTDataAPI.PlaylistItem[] | string): void => {
-				if(typeof playlist !== 'string'){
-					resolve(pickMoviesDetail(playlist));
+			const pickedPlaylistsData = fetchedPlaylists.map((playlistItems) => {
+				if(typeof playlistItems !== 'string'){
+					return pickMoviesDetail(playlistItems);
 				}
 			});
+
+			// エラーでメッセージが入ってた場合 `map()` が無視して `undefined` を返すので
+			// `filter()` で `undefined` を消す
+			const cleanedPlaylistsData = pickedPlaylistsData.filter((currentItem): currentItem is DB.MovieDetail[] => typeof currentItem !== 'undefined');
+			resolve(cleanedPlaylistsData);
 		});
 
 	});
