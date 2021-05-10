@@ -1,3 +1,6 @@
+import fs from 'fs';
+import yaml from 'js-yaml';
+
 type twitterAPIKEY ={
 	consumer: {
 		key: string,
@@ -27,11 +30,9 @@ type dotEnvYaml = {
  * GCPのプロジェクトIDを `.envs/env.yaml` から取得
  */
 const GCPProjectID = () : string => {
-	const fs = require('fs');
-  const yaml = require('js-yaml');
   const yamlText = fs.readFileSync('.envs/env.yaml', 'utf8');
 
-	const envs : dotEnvYaml = yaml.load(yamlText);
+	const envs = yaml.load(yamlText) as dotEnvYaml;
 
 	return envs.gcpProjectName;
 }
@@ -40,11 +41,9 @@ const GCPProjectID = () : string => {
  * TwitterのAPIアクセスに必要なデータ一式を取得
  */
 const TwitterAPI = () : twitterAPIKEY => {
-	const fs = require('fs');
-  const yaml = require('js-yaml');
   const yamlText = fs.readFileSync('.envs/env.yaml', 'utf8');
 
-	const envs : dotEnvYaml = yaml.load(yamlText);
+	const envs = yaml.load(yamlText) as dotEnvYaml;
 
 	return envs.twitterAPI;
 }
@@ -53,12 +52,10 @@ const TwitterAPI = () : twitterAPIKEY => {
  * youtubeDataAPIのAPIキーを返す
  */
 const youtubeDataAPI = () : youtubeDataAPIKEY => {
-	const fs = require('fs');
-  const yaml = require('js-yaml');
-  const yamlText = fs.readFileSync('.envs/env.yaml', 'utf8');
+  const yamlText: string = fs.readFileSync('.envs/env.yaml', 'utf8');
 
-	const envs : dotEnvYaml = yaml.load(yamlText);
-	return envs.youtubeDataAPI; 
+	const envs = yaml.load(yamlText) as dotEnvYaml;
+	return envs.youtubeDataAPI;
 };
 
 export default {
