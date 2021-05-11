@@ -19,7 +19,6 @@
   "dependencies": {
     "@google-cloud/firestore": "^4.11.0",
     "@google-cloud/vision": "^2.3.1",
-    "array-foreach-async": "^1.0.1",
     "js-yaml": "^4.1.0",
     "node-cron": "^3.0.0",
     "request": "^2.88.2"
