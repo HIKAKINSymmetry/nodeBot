@@ -5,6 +5,27 @@ import {putMovies} from './modules/DatabaseProcessor';
 //    型の名前空間   実際のクラス
 import FireStore, { Firestore } from '@google-cloud/firestore';
 
+/**
+ * YoutubeのAPIを叩いてまだ処理されていない動画を検索する
+ * @param {FireStore.Firestore} db DBのインスタンス
+ * @returns {DB.MovieDetail[]} シンメトリー処理していない動画の情報
+ */
+const findHaventProcessedVideo = async (db: FireStore.Firestore) : Promise<DB.MovieDetail[]> => {
+	const Playlists = await checkYoutube();
+
+	// DBに `videoId` がなかったものたち
+	const haventProcessedVideos: DB.MovieDetail[] = [];
+
+	for(const playlist of Playlists){
+		for(const video of playlist){
+			const queryAccess = await db.collection('movies').where('videoId', '==', video.videoId).get();
+			if(queryAccess.empty) haventProcessedVideos.push(video);
+		}
+	}
+
+	return haventProcessedVideos;
+};
+
 const symmetryYoutubeThumb = async () => {
 
 	const fireStoreCredentials: FireStore.Settings = {
