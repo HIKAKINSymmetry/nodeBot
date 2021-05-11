@@ -49,6 +49,11 @@ const symmetryYoutubeThumb = async () => {
 	}else{
 		// データべースを検索してまわる
 		console.log('データべースを検索中');
+		void findHaventProcessedVideo(database).then((Videos) => {
+			Videos.forEach((video) => {
+				console.log(`videoId: ${video.videoId} を処理します`);
+			});
+		});
 	}
 
 };
