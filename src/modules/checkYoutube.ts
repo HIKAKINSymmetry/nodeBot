@@ -1,5 +1,5 @@
 import request from 'request';
-import envYaml from './modules/envReader';
+import envYaml from './envReader';
 
 
 /**
