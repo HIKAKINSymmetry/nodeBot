@@ -1,4 +1,4 @@
-import checkYoutube from './checkYoutube';
+import checkYoutube from './modules/checkYoutube';
 import EnvYaml from './modules/envReader';
 import {putMovies} from './modules/DatabaseProcessor';
 
