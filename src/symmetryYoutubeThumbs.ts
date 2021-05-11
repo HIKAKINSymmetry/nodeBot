@@ -27,14 +27,11 @@ const findHaventProcessedVideo = async (db: FireStore.Firestore) : Promise<DB.Mo
 };
 
 const symmetryYoutubeThumb = async () => {
-
-	const fireStoreCredentials: FireStore.Settings = {
+	const database = new Firestore({
 		projectId: EnvYaml.GCPProjectID(),
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		keyFilename: `${process.env.PWD}/.envs/serviceAccount.json`
-	};
-
-	const database = new Firestore(fireStoreCredentials);
+	});
 	// 1件のみ取得
 	const CollectionSnapshot = await database.collection('movies').limit(1).get();
 
