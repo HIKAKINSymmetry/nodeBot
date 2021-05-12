@@ -82,6 +82,10 @@ const generateTweetsImage = async (filePath: string): Promise<tweet.containMedia
 
 			}
 		}
+		else {
+			console.log('VisionAPIから不正な値が返却されました');
+			Resolve([]);
+		}
 
 	});
 };
