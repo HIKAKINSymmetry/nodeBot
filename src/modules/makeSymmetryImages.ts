@@ -35,7 +35,22 @@ const generateTweetsImage = async (filePath: string): Promise<tweet.containMedia
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		keyFilename: `${process.env.PWD}/.envs/serviceAccount.json`
 	});
-	const [faceDetectionResult] = await visionAPI.faceDetection(filePath);
+
+	// `faceDetection()` は顔の識別数上限が設定不可能なので
+	// `annotateImage()` で代用
+	const [faceDetectionResult] = await visionAPI.annotateImage({
+		image: {
+			source: {
+				filename: filePath
+			}
+		},
+		features: [
+			{
+				type: 'FACE_DETECTION',
+				maxResults: 10
+			}
+		]
+	});
 	const faces = faceDetectionResult.faceAnnotations;
 
 	return new Promise((Resolve) => {
