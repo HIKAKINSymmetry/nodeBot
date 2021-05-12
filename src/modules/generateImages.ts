@@ -60,4 +60,4 @@ const make2ndImage = async (originalImagePath: string, symmetryPoint: number, ou
 	return path.resolve(`${process.env.PWD}/${outputFilePath}`);
 };
 
-export {make1stImage, make2ndImage};
+export default {make1stImage, make2ndImage};
