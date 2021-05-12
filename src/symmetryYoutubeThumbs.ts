@@ -1,9 +1,13 @@
 import checkYoutube from './modules/checkYoutube';
 import EnvYaml from './modules/envReader';
 import {putMovies} from './modules/DatabaseProcessor';
+import downloadImage from './modules/downloadImage';
+import generateTweetsImage from './modules/makeSymmetryImages';
 
 //    型の名前空間   実際のクラス
 import FireStore, { Firestore } from '@google-cloud/firestore';
+import path from 'path';
+import fs from 'fs';
 
 /**
  * YoutubeのAPIを叩いてまだ処理されていない動画を検索する
@@ -24,6 +28,26 @@ const findHaventProcessedVideo = async (db: FireStore.Firestore) : Promise<DB.Mo
 	}
 
 	return haventProcessedVideos;
+};
+
+const makeSymmetryTweet = async (video: DB.MovieDetail) => {
+	if(typeof video.thumb !== 'undefined'){
+		const thumbImageExtention = path.extname(video.thumb);
+		const originalImage = await downloadImage(video.thumb, `${video.videoId}.${thumbImageExtention}`);
+		const Tweets = await generateTweetsImage(originalImage);
+		if(Tweets.length < 1){
+			// 画像から顔が検出されなかったetcで空Arrayのとき
+			// ファイルを削除だけして終わり
+			fs.unlink(originalImage, (error) => {
+				if(error) console.log(error.message);
+				console.log(`ファイルを削除しました: ${originalImage}`);
+			});
+		}
+		else {
+			// 顔が検出されてツイートのメディア画像が出来てるとき
+
+		}
+	}
 };
 
 const symmetryYoutubeThumb = async () => {
