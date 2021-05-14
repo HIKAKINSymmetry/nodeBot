@@ -7,7 +7,7 @@ import path from 'path';
  * @param {string} originalImagePath 元画像のファイルパス
  * @param {Number} symmetrylPoint シンメトリーをする軸のX座標
  * @param {string} outputFilePath 画像を出力するファイルパス
- * @returns {Promise<string>} 書き出したシンメトリー画像のファイルパス
+ * @returns {Promise<string>} 書きだした画像のbase64エンコードしたString
  */
 const make1stImage = async (originalImagePath: string, symmetryPoint: number, outputFilePath: string): Promise<string> => {
 
@@ -26,7 +26,7 @@ const make1stImage = async (originalImagePath: string, symmetryPoint: number, ou
 	console.log('Wrote 1st image.');
 
 	// シェル上での実行場所によって書き出しのファイルパスが変化するので `process` から取得
-	return path.resolve(`${process.env.PWD}/${outputFilePath}`);
+	return await SymmetricalImage1.getBase64Async(Jimp.MIME_JPEG);
 };
 
 
@@ -35,7 +35,7 @@ const make1stImage = async (originalImagePath: string, symmetryPoint: number, ou
  * @param {string} originalImagePath 元画像のファイルパス
  * @param {Number} symmetrylPoint シンメトリーをする軸のX座標
  * @param {string} outputFilePath 画像を出力するファイルパス
- * @returns {Promise<string>} 書き出したシンメトリー画像のファイルパス
+ * @returns {Promise<string>} 書きだした画像のbase64エンコードしたString
  */
 const make2ndImage = async (originalImagePath: string, symmetryPoint: number, outputFilePath: string): Promise<string> => {
 
@@ -57,7 +57,7 @@ const make2ndImage = async (originalImagePath: string, symmetryPoint: number, ou
 	SymmetricalImage2.blit(croppedImage, SymmetricalImage2.getWidth() - croppedImage.getWidth() - 10, 10).write(outputFilePath);
 	console.log('Wrote 2nd image.');
 
-	return path.resolve(`${process.env.PWD}/${outputFilePath}`);
+	return await SymmetricalImage2.getBase64Async(Jimp.MIME_JPEG);
 };
 
 export default {make1stImage, make2ndImage};
