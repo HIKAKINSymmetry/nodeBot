@@ -44,11 +44,11 @@
 
 からAPIキーを発行してください.
 また, Youtube Data API以外へのアクセスをAPIキー設定から禁止することをお勧めします.
+
 6. 発行したYoutube Data API用のAPIキーを`${ProjectRoot}/.envs/env.yaml` に記述して保存してください
 
 ## Twitter API のAPIキー作成
-1. https://developer.twitter.com から開発者申請をしてください
-	Google翻訳使いまくっても問題ないです
+1. https://developer.twitter.com から開発者申請をしてください Google翻訳使いまくっても問題ないです
 2. 申請が終わればStandalone Appsからプロジェクトを作成してください.
 	Permission は **Read and Write** より上で設定してください
 3. Consumerキーが発行できたら, oAuthするなり管理者のアクセストークンを作るなりで `AccessKey` と `AccessSecret` を発行してください
