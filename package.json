@@ -4,6 +4,11 @@
   "main": "index.js",
   "author": "huequica",
   "license": "MIT",
+	"scripts": {
+		"compile": "tsc",
+		"lint": "eslint src/ --ext ts",
+		"lint:fix": "eslint src/ --ext ts --fix"
+	},
   "devDependencies": {
     "@types/js-yaml": "^4.0.1",
     "@types/node": "14",
