@@ -1,6 +1,39 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 import Jimp from 'jimp';
-import path from 'path';
+import {TwitterClient} from 'twitter-api-client';
+import EnvYaml from './envReader';
+
+/**
+ * ファイルパスに指定した画像をTwitterのmediaサーバにアップロードする
+ * @param {twit} twAPI `twit` のインスタンス
+ * @param encodedImage base64エンコードした画像
+ * @returns {Promise<string | Error>} 成功していればメディアのID(string)
+ */
+const uploadImage = (encodedImage: string): Promise<string | Error>  => {
+	const config = EnvYaml.TwitterAPI();
+	const twAPI = new TwitterClient({
+		apiKey: config.consumer.key,
+		apiSecret: config.consumer.secret,
+		accessToken: config.access.token,
+		accessTokenSecret: config.access.secret
+	});
+
+	return new Promise((resolve) => {
+		const uploadImage = twAPI.media.mediaUpload({
+			media_data: encodedImage,
+			media_category: 'tweet_image'
+		});
+		void uploadImage
+			.then((response) => {
+				console.log('media Upload Success', response.media_id_string);
+				resolve(response.media_id_string);
+			})
+			.catch((reason) => {
+				console.log(reason);
+			});
+	});
+};
+
 
 /**
  * 1枚目の画像の生成関数
@@ -25,8 +58,10 @@ const make1stImage = async (originalImagePath: string, symmetryPoint: number, ou
 	SymmetricalImage1.blit(flippedImage, symmetryPoint + 10, 10).write(outputFilePath);
 	console.log('Wrote 1st image.');
 
-	// シェル上での実行場所によって書き出しのファイルパスが変化するので `process` から取得
-	return await SymmetricalImage1.getBase64Async(Jimp.MIME_JPEG);
+	const base64EncodedImage = await SymmetricalImage1.quality(70).getBase64Async(Jimp.MIME_PNG);
+	void uploadImage(base64EncodedImage);
+
+	return base64EncodedImage;
 };
 
 
@@ -57,7 +92,10 @@ const make2ndImage = async (originalImagePath: string, symmetryPoint: number, ou
 	SymmetricalImage2.blit(croppedImage, SymmetricalImage2.getWidth() - croppedImage.getWidth() - 10, 10).write(outputFilePath);
 	console.log('Wrote 2nd image.');
 
-	return await SymmetricalImage2.getBase64Async(Jimp.MIME_JPEG);
+	const base64EncodedImage = await SymmetricalImage2.quality(70).getBase64Async(Jimp.MIME_PNG);
+	void uploadImage(base64EncodedImage);
+
+	return base64EncodedImage;
 };
 
 export default {make1stImage, make2ndImage};

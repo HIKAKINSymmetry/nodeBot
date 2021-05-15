@@ -1,13 +1,13 @@
 import checkYoutube from './modules/checkYoutube';
 import EnvYaml from './modules/envReader';
-import {putMovies} from './modules/DatabaseProcessor';
+import {putMovies, putMovie} from './modules/DatabaseProcessor';
 import downloadImage from './modules/downloadImage';
 import generateTweetsImage from './modules/makeSymmetryImages';
 
 //    型の名前空間   実際のクラス
 import FireStore, { Firestore } from '@google-cloud/firestore';
-import twit from 'twit';
-import path from 'path';
+import {TwitterClient} from 'twitter-api-client';
+// import sleep from 'sleep-promise';
 import fs from 'fs';
 
 /**
@@ -34,61 +34,73 @@ const findHaventProcessedVideo = async (db: FireStore.Firestore) : Promise<DB.Mo
 /**
  * ファイルパスに指定した画像をTwitterのmediaサーバにアップロードする
  * @param {twit} twAPI `twit` のインスタンス
- * @param Image 画像のファイルパス
+ * @param encodedImage base64エンコードした画像
  * @returns {Promise<string | Error>} 成功していればメディアのID(string)
  */
-const uploadImage = (twAPI: twit, Image: string): Promise<string | Error>  => {
-	const encodedImage = fs.readFileSync(Image, {encoding: 'base64'});
-	return new Promise((resolve, reject) => {
-		twAPI.post('media/upload', {media_data: encodedImage}, (error, result) => {
-			const typedResult = result as tweet.mediumUploadResponse;
-			if(error) reject(error);
-			resolve(typedResult.media_id_string);
+const uploadImage = (twAPI: TwitterClient, encodedImage: string): Promise<string | Error>  => {
+	return new Promise((resolve) => {
+		const uploadImage = twAPI.media.mediaUpload({
+			media_data: encodedImage,
+			media_category: 'tweet_image'
 		});
+		void uploadImage
+			.then((response) => {
+				console.log('media Upload Success', response.media_id_string);
+				resolve(response.media_id_string);
+			})
+			.catch((reason) => {
+				console.log(reason);
+			});
 	});
 };
 
 /**
  * Twitterに画像付きツイートをアップロードする
- * @param {tweet.containMedia} tweetImages 1ツイート分の画像のファイルパス
+ * @param {tweet.containMedia} tweetImages 1ツイート分の画像
  * @returns {Promise<true>} 全プロセスで成功すれば `true` そうでなければrejectされてる
  */
-const updateTwitterStatus = (tweetImages: tweet.containMedia): Promise<true> => {
+const updateTwitterStatus = async (tweetImages: tweet.containMedia): Promise<true> => {
 	const config = EnvYaml.TwitterAPI();
-	const twitterAPI = new twit({
-		consumer_key: config.consumer.key,
-		consumer_secret: config.consumer.secret,
-		access_token: config.access.token,
-		access_token_secret: config.access.secret
+	const twitterAPI = new TwitterClient({
+		apiKey: config.consumer.key,
+		apiSecret: config.consumer.secret,
+		accessToken: config.access.token,
+		accessTokenSecret: config.access.secret
 	});
 
 	const postImageToTwitter = tweetImages.map((containImage) => uploadImage(twitterAPI, containImage));
 	return new Promise((resolve, reject) => {
 
-		void Promise.all(postImageToTwitter).then((postedMediaIds) => {
-			const filteredMediaIds = postedMediaIds.filter((currentItem): currentItem is string => typeof currentItem === 'string');
+		void Promise.all(postImageToTwitter)
+			.then((postedMediaIds) => {
 
-			// Error が混ざってて捨てられたものがある場合要素数に変化があるのでそれを見る
-			if(filteredMediaIds.length !== postedMediaIds.length){
-				// エラーが混ざってたことになるので棄却
-				console.log('画像のアップロード中にエラーが発生しました');
-				reject();
-			}
-			else {
-				// 問題なくメディアがアップロードできているので Statuses/update をする
-				void twitterAPI.post('statuses/update', {status: '', media_ids: filteredMediaIds}, (error) => {
-					if(error){
-						console.log('投稿に失敗しました');
-						reject();
-					}
-					else {
-						console.log('投稿に成功しました');
-						resolve(true);
-					}
-				});
-			}
+				const filteredMediaIds = postedMediaIds.filter((currentItem): currentItem is string => typeof currentItem === 'string');
 
-		});
+				// Error が混ざってて捨てられたものがある場合要素数に変化があるのでそれを見る
+				if(filteredMediaIds.length !== postedMediaIds.length){
+					// エラーが混ざってたことになるので棄却
+					console.log('画像のアップロード中にエラーが発生しました');
+					reject();
+				}
+				else {
+					// 問題なくメディアがアップロードできているので Statuses/update をする
+					void twitterAPI.tweets.statusesUpdate({
+						status: '',
+						media_ids: filteredMediaIds.join(',')
+					}).then((statusUpdateResponse) => {
+						if(statusUpdateResponse.id_str){
+							resolve(true);
+						}
+						else{
+							reject();
+						}
+					});
+				}
+
+			}).catch((error) => {
+				console.log('画像のアップロードが棄却されました');
+				console.log(error);
+			});
 
 	});
 };
@@ -97,23 +109,47 @@ const updateTwitterStatus = (tweetImages: tweet.containMedia): Promise<true> => 
  * 動画の情報からシンメトリー画像を生成し、Twitterにアップロードする
  * @param {DB.MovieDetail} video 1つの動画情報の集合オブジェクト
  */
-const makeSymmetryTweet = async (video: DB.MovieDetail) => {
+const makeSymmetryTweet = async (video: DB.MovieDetail): Promise<boolean> => {
 	if(typeof video.thumb !== 'undefined'){
-		const thumbImageExtention = path.extname(video.thumb);
-		const originalImage = await downloadImage(video.thumb, `${video.videoId}.${thumbImageExtention}`);
-		const Tweets = await generateTweetsImage(originalImage);
-		if(Tweets.length < 1){
-			// 画像から顔が検出されなかったetcで空Arrayのとき
-			// ファイルを削除だけして終わり
-			fs.unlink(originalImage, (error) => {
-				if(error) console.log(error.message);
-				console.log(`ファイルを削除しました: ${originalImage}`);
-			});
-		}
-		else {
-			// 顔が検出されてツイートのメディア画像が出来てるとき
 
-		}
+		// ファイル名の拡張子は関数の内側で自動で識別して付けてくれるので一意の名前だけでOK
+		const originalImage = await downloadImage(video.thumb, `${video.videoId}`);
+		const Tweets = await generateTweetsImage(originalImage);
+
+		return new Promise((resolve) => {
+			if(Tweets.length < 1){
+				// 画像から顔が検出されなかったetcで空Arrayのとき
+				// ファイルを削除だけして終わり
+				fs.unlink(originalImage, (error) => {
+					if(error) console.log(error.message);
+					console.log(`ファイルを削除しました: ${originalImage}`);
+					// 顔が検出されないことは分かったのでDBにpushさせるため `true` を返す
+					resolve(true);
+				});
+			}
+			else {
+				// 顔が検出されてツイートのメディア画像が出来てるとき
+				// ツイート群をTwitterAPIへ投稿
+				// const uploadTweet = Tweets.map((tweet) => updateTwitterStatus(tweet));
+
+				// void Promise.all(uploadTweet).then((results) => {
+				// 	if(results.every(result => result === true)){
+				// 		console.log('投稿に成功しました');
+				// 		resolve(true);
+				// 	}
+				// 	else {
+				// 		console.log('投稿に失敗しました');
+				// 		resolve(false);
+				// 	}
+				// }).catch((reason) => {
+				// 	console.log(reason);
+				// });
+			}
+
+		});
+	}
+	else {
+		return false;
 	}
 };
 
@@ -143,6 +179,14 @@ const symmetryYoutubeThumb = async () => {
 		void findHaventProcessedVideo(database).then((Videos) => {
 			Videos.forEach((video) => {
 				console.log(`videoId: ${video.videoId} を処理します`);
+				const postTweet = makeSymmetryTweet(video);
+				void postTweet.then((tweetResult) => {
+					if(tweetResult){
+						// 投稿に成功したとき or 顔が検出されなかったとき
+						console.log(tweetResult);
+						putMovie(video);
+					}
+				});
 			});
 		});
 	}

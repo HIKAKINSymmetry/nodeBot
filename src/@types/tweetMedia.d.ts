@@ -1,6 +1,6 @@
 declare namespace tweet{
 	/**
-	 * 1ツイート内に収める画像群(画像はファイルパスで表現)
+	 * 1ツイート内に収める画像群(画像は`base64`エンコードした画像のstring)
 	 */
 	export type containMedia = string[];
 

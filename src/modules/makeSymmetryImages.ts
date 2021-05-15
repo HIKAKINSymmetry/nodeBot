@@ -2,6 +2,7 @@ import vision from '@google-cloud/vision';
 import EnvYaml from './envReader';
 import SymmetryImage from './generateImages';
 import path from 'path';
+import fs from 'fs';
 
 /**
  * 顔の四編の頂点情報から中心のX座標を算出する
@@ -26,7 +27,7 @@ const detectFacesCenterCoordinate = (fdVertices: fdBoundingPoly.vertices): numbe
  * 画像をvisionAPIにかけ, 顔が検出されればシンメトリー画像を作って
  * 1ツイートごとに `Array` に内包して返す
  * @param {string} filePath シンメトリー画像を作る元の画像
- * @return {tweet.containMedia[]} 顔が見つかればツイートに使う画像のファイルパス群
+ * @return {tweet.containMedia[]} 顔が見つかればツイートに使う画像
  * 																なければ空の配列
  */
 const generateTweetsImage = async (filePath: string): Promise<tweet.containMedia[]> => {
@@ -53,6 +54,8 @@ const generateTweetsImage = async (filePath: string): Promise<tweet.containMedia
 	});
 	const faces = faceDetectionResult.faceAnnotations;
 
+	const encodedOriginalImage: string = fs.readFileSync(filePath, {encoding: 'base64'});
+
 	return new Promise((Resolve) => {
 
 		// `undefined` と `null` は〇す
@@ -63,7 +66,7 @@ const generateTweetsImage = async (filePath: string): Promise<tweet.containMedia
 				// ファイルの名前(拡張子なし)を取る(生成する画像のファイル名の決定に使う)
 				const originalImageBaseFilename = path.basename(filePath, path.extname(filePath));
 
-				const tweets = faces.map((face, currentNumber): Promise<tweet.containMedia> => {
+				const tweetContainMediaPromises = faces.map((face, currentNumber): Promise<tweet.containMedia> => {
 					return new Promise((resolve) => {
 						const tweetMediaList: tweet.containMedia = [];
 						// 顔の中心座標の算出
@@ -71,23 +74,23 @@ const generateTweetsImage = async (filePath: string): Promise<tweet.containMedia
 							face.fdBoundingPoly?.vertices as fdBoundingPoly.vertices
 						);
 
-						// 2枚の画像の生成を平行して実行、全部終わったらファイルパス群が帰ってくる
+						// 2枚の画像の生成を平行して実行、全部終わったら画像を `base64` エンコードしたデータが帰ってくる
 						void Promise.all([
 							SymmetryImage.make1stImage(filePath, FaceCenterCoordinate, `${originalImageBaseFilename}_${currentNumber}_1.jpg`),
 							SymmetryImage.make2ndImage(filePath, FaceCenterCoordinate, `${originalImageBaseFilename}_${currentNumber}_2.jpg`),
 						])
-							.then((generateFilePaths) => {
+							.then((generateImages) => {
 								// ツイートの元画像を追加してからシンメトリー画像を突っ込む
-								tweetMediaList.push(filePath);
-								generateFilePaths.forEach((generateFilepath) => tweetMediaList.push(generateFilepath));
+								tweetMediaList.push(encodedOriginalImage);
+								generateImages.forEach((generateImageEncodedData) => tweetMediaList.push(generateImageEncodedData));
 								resolve(tweetMediaList);
 							});
 
 					});
 				});
 
-				void Promise.all(tweets).then((hoge) => {
-					Resolve(hoge);
+				void Promise.all(tweetContainMediaPromises).then((tweetMedia) => {
+					Resolve(tweetMedia);
 				});
 			}
 			else{
