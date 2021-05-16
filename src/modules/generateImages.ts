@@ -42,7 +42,7 @@ const make1stImage = async (originalImagePath: string, symmetryPoint: number, ou
 
 	// もう一度貼りつけ
 	SymmetricalImage1 = SymmetricalImage1.insert(flippedImage, {x: symmetryPoint + 10, y: 10});
-	void SymmetricalImage1.save(outputFilePath);
+	// void SymmetricalImage1.save(outputFilePath); // シンメトリー画像を残したければこれのコメントアウトを外す
 	return await SymmetricalImage1.toBase64('image/jpeg');
 };
 
@@ -75,7 +75,7 @@ const make2ndImage = async (originalImagePath: string, symmetryPoint: number, ou
 	const croppedImage = flippedImage.flipX();
 
 	SymmetricalImage2 = SymmetricalImage2.insert(croppedImage, {x: SymmetricalImage2.width - croppedImage.width - 10, y: 10});
-	void SymmetricalImage2.save(outputFilePath);
+	// void SymmetricalImage2.save(outputFilePath); // シンメトリー画像を残したければこれのコメントアウトを外す
 	return await SymmetricalImage2.toBase64('image/jpeg');
 };
 
