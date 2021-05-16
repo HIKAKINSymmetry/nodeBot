@@ -1,39 +1,9 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-import Jimp from 'jimp';
-import {TwitterClient} from 'twitter-api-client';
-import EnvYaml from './envReader';
-
-/**
- * ファイルパスに指定した画像をTwitterのmediaサーバにアップロードする
- * @param {twit} twAPI `twit` のインスタンス
- * @param encodedImage base64エンコードした画像
- * @returns {Promise<string | Error>} 成功していればメディアのID(string)
- */
-const uploadImage = (encodedImage: string): Promise<string | Error>  => {
-	const config = EnvYaml.TwitterAPI();
-	const twAPI = new TwitterClient({
-		apiKey: config.consumer.key,
-		apiSecret: config.consumer.secret,
-		accessToken: config.access.token,
-		accessTokenSecret: config.access.secret
-	});
-
-	return new Promise((resolve) => {
-		const uploadImage = twAPI.media.mediaUpload({
-			media_data: encodedImage,
-			media_category: 'tweet_image'
-		});
-		void uploadImage
-			.then((response) => {
-				console.log('media Upload Success', response.media_id_string);
-				resolve(response.media_id_string);
-			})
-			.catch((reason) => {
-				console.log(reason);
-			});
-	});
-};
-
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-var-requires */
 
 /**
  * 1枚目の画像の生成関数
@@ -43,25 +13,37 @@ const uploadImage = (encodedImage: string): Promise<string | Error>  => {
  * @returns {Promise<string>} 書きだした画像のbase64エンコードしたString
  */
 const make1stImage = async (originalImagePath: string, symmetryPoint: number, outputFilePath: string): Promise<string> => {
-
-	// 既存画像の読み込みはJimp.read()
+	const {Image} = require('image-js');
+	// 既存画像の読み込みはImage.load()
 	// Promise の返却が先なので `await` で待ってから次に行く(でないと書き込みのタイミングがずれてえらいことになる)
-	const originalImage = await Jimp.read(originalImagePath);
-	// 新規画像の生成は `new Jimp(width, height, color)` で指定可能
-	const SymmetricalImage1 = new Jimp( symmetryPoint * 2 + 20, originalImage.getHeight() + 20, '#FFFFFF');
+	const originalImage = await Image.load(originalImagePath);
 
-	const croppedImage = originalImage.crop(0, 0, symmetryPoint, originalImage.getHeight());
-	// `flip()` をするとレシーバに破戒的変更を及ぼすので、先に `blit()` で貼りつけ
-	SymmetricalImage1.blit(croppedImage, 10, 10);
+	const originalImageDetails = {
+		width: originalImage.width,
+		height: originalImage.height
+	};
+	// 新規画像の生成は `new Jimp(width, height, {options})` で指定可能
+	// 初期の画像の背景色が指定できなさそうなので `invert()` で黒を白に反転させる
+	let SymmetricalImage1 = new Image(symmetryPoint * 2 + 20, 20 + originalImageDetails.height).invert();
 
-	const flippedImage = croppedImage.flip(true, false);
-	SymmetricalImage1.blit(flippedImage, symmetryPoint + 10, 10).write(outputFilePath);
-	console.log('Wrote 1st image.');
+	// width(height) は切り取る範囲
+	const croppedImage = originalImage.crop({
+		x: 0,
+		y: 0,
+		width: symmetryPoint,
+		height: originalImageDetails.height
+	});
 
-	const base64EncodedImage = await SymmetricalImage1.quality(70).getBase64Async(Jimp.MIME_PNG);
-	void uploadImage(base64EncodedImage);
+	// 先に貼りつけ
+	SymmetricalImage1 = SymmetricalImage1.insert(croppedImage, {x: 10, y: 10});
 
-	return base64EncodedImage;
+	// 切り抜かれた画像をX方向に反転
+	const flippedImage = croppedImage.flipX();
+
+	// もう一度貼りつけ
+	SymmetricalImage1 = SymmetricalImage1.insert(flippedImage, {x: symmetryPoint + 10, y: 10});
+	void SymmetricalImage1.save(outputFilePath);
+	return await SymmetricalImage1.toBase64('image/jpeg');
 };
 
 
@@ -73,29 +55,28 @@ const make1stImage = async (originalImagePath: string, symmetryPoint: number, ou
  * @returns {Promise<string>} 書きだした画像のbase64エンコードしたString
  */
 const make2ndImage = async (originalImagePath: string, symmetryPoint: number, outputFilePath: string): Promise<string> => {
+	const {Image} = require('image-js');
+	const originalImage = await Image.load(originalImagePath);
+	const originalImageDetails = {
+		width: originalImage.width,
+		height: originalImage.height
+	};
 
-	const originalImage = await Jimp.read(originalImagePath);
+	let SymmetricalImage2 = new Image((originalImageDetails.width - symmetryPoint) * 2 + 20, originalImageDetails.height + 20).invert();
+	const flippedImage = originalImage.crop({
+		x: symmetryPoint,
+		y: 0,
+		width: originalImageDetails.width - symmetryPoint,
+		height: originalImageDetails.height
+	}).flipX();
 
-	const SymmetricalImage2 = new Jimp((originalImage.getWidth() - symmetryPoint) * 2 + 20, originalImage.getHeight() + 20, '#FFFFFF');
+	SymmetricalImage2 = SymmetricalImage2.insert(flippedImage, {x: 10, y: 10});
 
-	// 後半は切り抜く範囲なので計算が必要
-	// 左にそのまま埋めるので一旦先に反転
-	const flippedImage = originalImage.crop(symmetryPoint, 0, (originalImage.getWidth() - symmetryPoint), originalImage.getHeight()).flip(true, false);
+	const croppedImage = flippedImage.flipX();
 
-	// 左側からなので `10, 10` の位置に貼りつけ
-	SymmetricalImage2.blit(flippedImage, 10, 10);
-
-	// `flip()` したものをもっかい `flip()` して元に戻す
-	const croppedImage = flippedImage.flip(true, false);
-
-	// 右側なので投稿する画像の `width` から 切り抜かれた画像の分を減算し、更に10px分白枠があるのでその分も減らした所に貼りつける
-	SymmetricalImage2.blit(croppedImage, SymmetricalImage2.getWidth() - croppedImage.getWidth() - 10, 10).write(outputFilePath);
-	console.log('Wrote 2nd image.');
-
-	const base64EncodedImage = await SymmetricalImage2.quality(70).getBase64Async(Jimp.MIME_PNG);
-	void uploadImage(base64EncodedImage);
-
-	return base64EncodedImage;
+	SymmetricalImage2 = SymmetricalImage2.insert(croppedImage, {x: SymmetricalImage2.width - croppedImage.width - 10, y: 10});
+	void SymmetricalImage2.save(outputFilePath);
+	return await SymmetricalImage2.toBase64('image/jpeg');
 };
 
 export default {make1stImage, make2ndImage};
