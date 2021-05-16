@@ -130,20 +130,20 @@ const makeSymmetryTweet = async (video: DB.MovieDetail): Promise<boolean> => {
 			else {
 				// 顔が検出されてツイートのメディア画像が出来てるとき
 				// ツイート群をTwitterAPIへ投稿
-				// const uploadTweet = Tweets.map((tweet) => updateTwitterStatus(tweet));
+				const uploadTweet = Tweets.map((tweet) => updateTwitterStatus(tweet));
 
-				// void Promise.all(uploadTweet).then((results) => {
-				// 	if(results.every(result => result === true)){
-				// 		console.log('投稿に成功しました');
-				// 		resolve(true);
-				// 	}
-				// 	else {
-				// 		console.log('投稿に失敗しました');
-				// 		resolve(false);
-				// 	}
-				// }).catch((reason) => {
-				// 	console.log(reason);
-				// });
+				void Promise.all(uploadTweet).then((results) => {
+					if(results.every(result => result === true)){
+						console.log('投稿に成功しました');
+						resolve(true);
+					}
+					else {
+						console.log('投稿に失敗しました');
+						resolve(false);
+					}
+				}).catch((reason) => {
+					console.log(reason);
+				});
 			}
 
 		});
