@@ -130,20 +130,26 @@ const makeSymmetryTweet = async (video: DB.MovieDetail): Promise<boolean> => {
 			else {
 				// 顔が検出されてツイートのメディア画像が出来てるとき
 				// ツイート群をTwitterAPIへ投稿
-				// const uploadTweet = Tweets.map((tweet) => updateTwitterStatus(tweet));
+				const uploadTweet = Tweets.map((tweet) => updateTwitterStatus(tweet));
 
-				// void Promise.all(uploadTweet).then((results) => {
-				// 	if(results.every(result => result === true)){
-				// 		console.log('投稿に成功しました');
-				// 		resolve(true);
-				// 	}
-				// 	else {
-				// 		console.log('投稿に失敗しました');
-				// 		resolve(false);
-				// 	}
-				// }).catch((reason) => {
-				// 	console.log(reason);
-				// });
+				void Promise.all(uploadTweet).then((results) => {
+					if(results.every(result => result === true)){
+						console.log('投稿に成功しました');
+						// 元画像を削除
+						fs.unlink(originalImage, (error) => {
+							if(error) console.log(error.message);
+							console.log(`ファイルを削除しました: ${originalImage}`);
+							// 顔が検出されないことは分かったのでDBにpushさせるため `true` を返す
+							resolve(true);
+						});
+					}
+					else {
+						console.log('投稿に失敗しました');
+						resolve(false);
+					}
+				}).catch((reason) => {
+					console.log(reason);
+				});
 			}
 
 		});
@@ -183,7 +189,6 @@ const symmetryYoutubeThumb = async () => {
 				void postTweet.then((tweetResult) => {
 					if(tweetResult){
 						// 投稿に成功したとき or 顔が検出されなかったとき
-						console.log(tweetResult);
 						putMovie(video);
 					}
 				});
