@@ -159,7 +159,11 @@ const makeSymmetryTweet = async (video: DB.MovieDetail): Promise<boolean> => {
 	}
 };
 
-const symmetryYoutubeThumb = async () => {
+/**
+ * Youtubeからデータを取得してシンメトリー画像を投稿する
+ * 要はYoutube周りのエントリーポイント
+ */
+const symmetryYoutubeThumb = async (): Promise<void> => {
 	const database = new Firestore({
 		projectId: EnvYaml.GCPProjectID(),
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
