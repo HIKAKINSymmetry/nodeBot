@@ -63,6 +63,10 @@ const make2ndImage = async (originalImagePath: string, symmetryPoint: number, ou
 	};
 
 	let SymmetricalImage2 = new Image((originalImageDetails.width - symmetryPoint) * 2 + 20, originalImageDetails.height + 20).invert();
+
+
+	// width(height)は切り抜く範囲なので計算が必要
+	// 左にそのまま埋めるので一旦先に反転
 	const flippedImage = originalImage.crop({
 		x: symmetryPoint,
 		y: 0,
@@ -70,10 +74,13 @@ const make2ndImage = async (originalImagePath: string, symmetryPoint: number, ou
 		height: originalImageDetails.height
 	}).flipX();
 
+	// 左側からなので `10, 10` の位置に貼りつけ
 	SymmetricalImage2 = SymmetricalImage2.insert(flippedImage, {x: 10, y: 10});
 
+	// `flip()` したものをもっかい `flip()` して元に戻す
 	const croppedImage = flippedImage.flipX();
 
+	// 右側なので投稿する画像の `width` から 切り抜かれた画像の分を減算し、更に10px分白枠があるのでその分も減らした所に貼りつける
 	SymmetricalImage2 = SymmetricalImage2.insert(croppedImage, {x: SymmetricalImage2.width - croppedImage.width - 10, y: 10});
 	// void SymmetricalImage2.save(outputFilePath); // シンメトリー画像を残したければこれのコメントアウトを外す
 	return await SymmetricalImage2.toBase64('image/jpeg');
