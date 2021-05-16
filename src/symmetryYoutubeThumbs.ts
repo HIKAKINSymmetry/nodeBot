@@ -198,4 +198,4 @@ const symmetryYoutubeThumb = async () => {
 
 };
 
-export default symmetryYoutubeThumb();
+export default symmetryYoutubeThumb;
