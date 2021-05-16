@@ -183,7 +183,6 @@ const symmetryYoutubeThumb = async () => {
 				void postTweet.then((tweetResult) => {
 					if(tweetResult){
 						// 投稿に成功したとき or 顔が検出されなかったとき
-						console.log(tweetResult);
 						putMovie(video);
 					}
 				});
