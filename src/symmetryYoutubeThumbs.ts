@@ -135,7 +135,13 @@ const makeSymmetryTweet = async (video: DB.MovieDetail): Promise<boolean> => {
 				void Promise.all(uploadTweet).then((results) => {
 					if(results.every(result => result === true)){
 						console.log('投稿に成功しました');
-						resolve(true);
+						// 元画像を削除
+						fs.unlink(originalImage, (error) => {
+							if(error) console.log(error.message);
+							console.log(`ファイルを削除しました: ${originalImage}`);
+							// 顔が検出されないことは分かったのでDBにpushさせるため `true` を返す
+							resolve(true);
+						});
 					}
 					else {
 						console.log('投稿に失敗しました');
