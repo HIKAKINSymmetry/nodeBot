@@ -32,7 +32,7 @@ const findHaventProcessedVideo = async (db: FireStore.Firestore) : Promise<DB.Mo
 };
 
 /**
- * ファイルパスに指定した画像をTwitterのmediaサーバにアップロードする
+ * 画像をTwitterのmediaサーバにアップロードする
  * @param {TwitterClient} twAPI `twitterClient` のインスタンス
  * @param encodedImage base64エンコードした画像
  * @returns {Promise<string | Error>} 成功していればメディアのID(string)
