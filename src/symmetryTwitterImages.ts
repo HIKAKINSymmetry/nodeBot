@@ -1,22 +1,23 @@
 import dotEnv from './modules/envReader';
 import downloadImage from './modules/downloadImage';
-import twit, { Twitter } from 'twit';
+import twit from 'twit';
 
-/**
- * `tweet` にメディア(画像)が入っているかどうか確認する
- * @param {twit.Twitter.Status} tweet APIから返却されたツイートのオブジェクト
- * @returns {boolean} 入っていれば `true`
- */
-const hasMediaIn = (tweet: twit.Twitter.Status): boolean => ('extended_entities' in tweet);
+// `@types/twit` が古くて `extended_entities` が入ってないので自前で入れる
+type ExtendedStatus = twit.Twitter.Status & {
+	extended_entities?: {
+		media: twit.Twitter.MediaEntity[]
+	}
+}
 
 /**
  * 1ツイートに内包された画像を保存し、そのファイルパス群を返す
  * @param {twit.Twitter.MediaEntity} media
  * @returns {Promise<Array<string | Error>} ファイルパス群, もしくはエラーオブジェクト
  */
-const saveImages = (entities: Twitter.Entities): Promise<Array<string>> => {
+const saveImages = (media: twit.Twitter.MediaEntity[]): Promise<Array<string>> => {
 	return new Promise((resolve, reject) => {
-		const saveImages = entities.media.map((meduim) => downloadImage(meduim.media_url_https));
+		console.log(media.length);
+		const saveImages = media.map((meduim) => downloadImage(meduim.media_url_https));
 		void Promise.all(saveImages)
 			.then((savedImagePaths) => {
 				resolve(savedImagePaths);
@@ -44,16 +45,20 @@ const symmetryTwitterImages = (): void => {
 
 	const Stream = twitterAPI.stream('statuses/filter', {follow: [userIDs.huequica]});
 
-	Stream.on('tweet', (Tweet: twit.Twitter.Status) => {
-		if(hasMediaIn(Tweet)){
+	Stream.on('tweet', (Tweet: ExtendedStatus) => {
+		// メディアが入ってるなら `extended_entities` は `undefined` にはなってない
+		if(typeof Tweet.extended_entities !== 'undefined'){
 			console.log('メディアが存在しました');
-			void saveImages(Tweet.entities)
+			void saveImages(Tweet.extended_entities?.media)
 				.then((savedImagePaths) => {
 					console.log(savedImagePaths);
 				})
 				.catch(() => {
 					console.log('画像の保存でエラーが発生しました');
 				});
+		}
+		else {
+			console.log('メディアはありませんでした');
 		}
 	});
 };
