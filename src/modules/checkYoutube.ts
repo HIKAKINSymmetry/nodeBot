@@ -45,9 +45,8 @@ const pickMoviesDetail = (movies: YTDataAPI.PlaylistItem[]): Array<DB.MovieDetai
 
 	return movies.map((movie: YTDataAPI.PlaylistItem) => {
 		// `maxres` のキーが無い旧時代の動画があることがあるので
-		// なかった場合は `standard` のキーのサムネイルを登録
-		const thumbnailURL = 'maxres' in movie.snippet.thumbnails ?
-			movie.snippet.thumbnails.maxres?.url : movie.snippet.thumbnails.standard.url;
+		// なかった場合は `high` のキーのサムネイルを登録
+		const thumbnailURL = typeof movie.snippet.thumbnails.maxres !== 'undefined' ? movie.snippet.thumbnails.maxres?.url : movie.snippet.thumbnails.high.url;
 
 		return {
 			videoId: movie.snippet.resourceId.videoId,
