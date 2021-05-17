@@ -102,4 +102,4 @@ const symmetryTwitterImages = (): void => {
 	});
 };
 
-void symmetryTwitterImages();
+export default symmetryTwitterImages;
