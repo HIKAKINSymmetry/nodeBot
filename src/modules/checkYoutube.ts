@@ -18,7 +18,7 @@ const fetchPlaylistItem = (playlistId: string) : Promise<YTDataAPI.PlaylistItem[
 		qs: {
 			key: envYaml.youtubeDataAPI().apikey,
 			part: 'snippet',
-			maxResults: 3,
+			maxResults: 10,
 			playlistId: playlistId
 		}
 	};
