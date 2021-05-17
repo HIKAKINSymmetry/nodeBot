@@ -1,6 +1,9 @@
 import dotEnv from './modules/envReader';
 import downloadImage from './modules/downloadImage';
+import generateTweetsImage from './modules/makeSymmetryImages';
+import updateTwitterStatus from './modules/tweetUploader';
 import twit from 'twit';
+import fs from 'fs';
 
 // `@types/twit` が古くて `extended_entities` が入ってないので自前で入れる
 type ExtendedStatus = twit.Twitter.Status & {
@@ -9,25 +12,41 @@ type ExtendedStatus = twit.Twitter.Status & {
 	}
 }
 
-/**
- * 画像をTwitterのmediaサーバにアップロードする
- * @param {twit} twAPI twitのインスタンス
- * @param {string} Image アップロードする画像(`base64`エンコードしたものを前提とする)
- * @return {Promise<string | Error>} 正常終了すれば`media_id_string`
- */
-const uploadImage = (twAPI: twit, Image: string): Promise<string | Error>  => {
-	return new Promise((resolve, reject) => {
-		void twAPI.post('media/upload', {media_data: Image}, (error, result) => {
-			if(error){
-				reject(error);
-			}
-			else{
-				const replacedResult = result as tweet.mediumUploadResponse;
-				resolve(replacedResult.media_id_string);
-			}
+
+const makeSymmetryTweet = async (imagePath: string) => {
+	const Tweets = await generateTweetsImage(imagePath);
+
+	if(Tweets.length < 1){
+		// 画像から顔が検出されなかったetcで空Arrayのとき
+		// ファイルを削除だけして終わり
+		fs.unlink(imagePath, (error) => {
+			if(error) console.log(error.message);
+			console.log(`ファイルを削除しました: ${imagePath}`);
 		});
-	});
+	}
+	else {
+		// 顔が検出されてツイートのメディア画像が出来てるとき
+		// ツイート群をTwitterAPIへ投稿
+		const uploadTweet = Tweets.map((tweet) => updateTwitterStatus(tweet));
+
+		void Promise.all(uploadTweet).then((results) => {
+			if(results.every(result => result === true)){
+				console.log('投稿に成功しました');
+				// 元画像を削除
+				fs.unlink(imagePath, (error) => {
+					if(error) console.log(error.message);
+					console.log(`ファイルを削除しました: ${imagePath}`);
+				});
+			}
+			else {
+				console.log('投稿に失敗しました');
+			}
+		}).catch((reason) => {
+			console.log(reason);
+		});
+	}
 };
+
 
 /**
  * 1ツイートに内包された画像を保存し、そのファイルパス群を返す
@@ -71,7 +90,7 @@ const symmetryTwitterImages = (): void => {
 			console.log('メディアが存在しました');
 			void saveImages(Tweet.extended_entities?.media)
 				.then((savedImagePaths) => {
-					console.log(savedImagePaths);
+					savedImagePaths.forEach((imagePath) => void makeSymmetryTweet(imagePath));
 				})
 				.catch(() => {
 					console.log('画像の保存でエラーが発生しました');
