@@ -85,7 +85,7 @@ const symmetryTwitterImages = (): void => {
 		huequica: '1013602985698459648'
 	};
 
-	const Stream = twitterAPI.stream('statuses/filter', {follow: [userIDs.huequica]});
+	const Stream = twitterAPI.stream('statuses/filter', {follow: [userIDs.hikakin]});
 
 	Stream.on('tweet', (Tweet: ExtendedStatus) => {
 		// メディアが入ってるなら `extended_entities` は `undefined` にはなってない
