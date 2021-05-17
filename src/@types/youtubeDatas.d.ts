@@ -28,7 +28,7 @@ declare namespace YTDataAPI {
 			default:  thumbnail, // 120 x 90
 			medium:   thumbnail, // 320 x 180
 			high:     thumbnail, // 480 x 360
-			standard: thumbnail, // 640 x 480
+			standard?: thumbnail, // 640 x 480
 			maxres?:  thumbnail  // 1280 x 720
 		},
 		channelTitle: string, // チャンネルの名前
