@@ -1,7 +1,3 @@
-# This reos is now under develop!
-
-このリポジトリは現在開発中です。**現時点では正常に稼働しません。**
-
 # HIKAKINSymmetry/nodeBot
 
 [@HIKAKIN_SYM](https://twitter.com/@HIKAKIN_SYM) の再実装, および稼働を目的としたプロジェクトのリポジトリです.
@@ -30,6 +26,13 @@
 
 + TwitterAPI(Standard v1.1)
 	+ ツイッターへの投稿や, HIKAKIN氏の投稿の取得に使用
+
+# 稼働するのに使うサービス
++ Google Compute Engine
+	+ Dockerのイメージに固めたアプリケーションを稼働させるのに使用
+
++ Container Registry
+	+ Dockerイメージを非公開にして管理するのに使用
 
 # 稼働までの手続き
 
