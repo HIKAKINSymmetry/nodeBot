@@ -5,6 +5,7 @@
   "author": "huequica",
   "license": "MIT",
   "scripts": {
+		"start": "node dist/index.js",
     "compile": "tsc",
     "lint": "eslint src/ --ext ts",
     "lint:fix": "eslint src/ --ext ts --fix"
