@@ -67,6 +67,9 @@ const saveImages = (media: twit.Twitter.MediaEntity[]): Promise<Array<string>> =
 	});
 };
 
+/**
+ * Twitterまわりのエントリーポイント
+ */
 const symmetryTwitterImages = (): void => {
 	const dotEnvsConfig  = dotEnv.TwitterAPI();
 	const twitterAPI = new twit({
