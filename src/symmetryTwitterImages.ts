@@ -10,6 +10,26 @@ type ExtendedStatus = twit.Twitter.Status & {
 }
 
 /**
+ * 画像をTwitterのmediaサーバにアップロードする
+ * @param {twit} twAPI twitのインスタンス
+ * @param {string} Image アップロードする画像(`base64`エンコードしたものを前提とする)
+ * @return {Promise<string | Error>} 正常終了すれば`media_id_string`
+ */
+const uploadImage = (twAPI: twit, Image: string): Promise<string | Error>  => {
+	return new Promise((resolve, reject) => {
+		void twAPI.post('media/upload', {media_data: Image}, (error, result) => {
+			if(error){
+				reject(error);
+			}
+			else{
+				const replacedResult = result as tweet.mediumUploadResponse;
+				resolve(replacedResult.media_id_string);
+			}
+		});
+	});
+};
+
+/**
  * 1ツイートに内包された画像を保存し、そのファイルパス群を返す
  * @param {twit.Twitter.MediaEntity} media
  * @returns {Promise<Array<string | Error>} ファイルパス群, もしくはエラーオブジェクト
