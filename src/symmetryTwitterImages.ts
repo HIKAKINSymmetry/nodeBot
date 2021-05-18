@@ -89,7 +89,8 @@ const symmetryTwitterImages = (): void => {
 
 	Stream.on('tweet', (Tweet: ExtendedStatus) => {
 		// メディアが入ってるなら `extended_entities` は `undefined` にはなってない
-		if(typeof Tweet.extended_entities !== 'undefined'){
+		// なお, `Tweet` は `@hikakin` にメンションしている他の人間も入ってくるので同様にフィルタをかける
+		if(typeof Tweet.extended_entities !== 'undefined' && Tweet.user.screen_name === 'hikakin'){
 			console.log('メディアが存在しました');
 			void saveImages(Tweet.extended_entities?.media)
 				.then((savedImagePaths) => {
