@@ -7,6 +7,7 @@ import updateTwitterStatus from './modules/tweetUploader';
 
 //    型の名前空間   実際のクラス
 import FireStore, { Firestore } from '@google-cloud/firestore';
+import moment from 'moment';
 import fs from 'fs';
 
 /**
@@ -111,7 +112,8 @@ const symmetryYoutubeThumb = async (): Promise<void> => {
 
 	}else{
 		// データべースを検索してまわる
-		console.log('データべースを検索中');
+		const nowTime = moment().format('YYYY/MM/DD HH:mm:ss');
+		console.log(nowTime, 'データべースを検索中');
 		void findHaventProcessedVideo(database).then((Videos) => {
 			Videos.forEach((video) => {
 				console.log(`videoId: ${video.videoId} を処理します`);
