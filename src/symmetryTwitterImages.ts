@@ -72,7 +72,8 @@ const saveImages = (media: twit.Twitter.MediaEntity[]): Promise<Array<string>> =
  * @returns {boolean} 処理するツイートなら `True`
  */
 const filterTwitterPost = (tw: ExtendedStatus): boolean =>
-	tw.user.screen_name === 'hikakin';
+	tw.user.screen_name       === 'hikakin' && // `@hikakin` のツイート
+	tw.entities.user_mentions === []; 				 // `@Youtube` などにメンションしていない
 
 /**
  * Twitterまわりのエントリーポイント
