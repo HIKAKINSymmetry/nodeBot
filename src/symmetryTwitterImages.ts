@@ -67,6 +67,13 @@ const saveImages = (media: twit.Twitter.MediaEntity[]): Promise<Array<string>> =
 	});
 };
 
+/** Stream に流れてきたツイートにフィルタリングをかける
+ * @param {ExtendedStatus} tw ツイートのオブジェクト
+ * @returns {boolean} 処理するツイートなら `True`
+ */
+const filterTwitterPost = (tw: ExtendedStatus): boolean =>
+	tw.user.screen_name === 'hikakin';
+
 /**
  * Twitterまわりのエントリーポイント
  */
@@ -90,7 +97,7 @@ const symmetryTwitterImages = (): void => {
 	Stream.on('tweet', (Tweet: ExtendedStatus) => {
 		// メディアが入ってるなら `extended_entities` は `undefined` にはなってない
 		// なお, `Tweet` は `@hikakin` にメンションしている他の人間も入ってくるので同様にフィルタをかける
-		if(typeof Tweet.extended_entities !== 'undefined' && Tweet.user.screen_name === 'hikakin'){
+		if(typeof Tweet.extended_entities !== 'undefined' && filterTwitterPost(Tweet)){
 			console.log('メディアが存在しました');
 			void saveImages(Tweet.extended_entities?.media)
 				.then((savedImagePaths) => {
