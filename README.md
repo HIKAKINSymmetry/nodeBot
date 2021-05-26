@@ -4,6 +4,14 @@
 
 [HIKAKIN_SYM/Bot](https://github.com/HIKAKIN-SYM/Bot) の挙動をある程度再現しています
 
+# ⚠ WARNING 警告
+
+このリポジトリの`dockerfile`から生成されたDockerイメージには**GCPの認証情報が含まれています**。
+
+必ず Container Registry などの**非公開でイメージを管理できるサービス上で**管理してください。
+
+でなければあなたのGCPプロジェクト上にとんでもない請求が飛んでくるでしょう。
+
 # 変更点
 
 + Youtubeのサムネイルを処理したかどうか判別するために使っているDBをSQLite3からGCPの提供するFirestoreに変更しています
