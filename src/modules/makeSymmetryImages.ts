@@ -1,7 +1,6 @@
 import vision from '@google-cloud/vision';
 import EnvYaml from './envReader';
 import SymmetryImage from './generateImages';
-import path from 'path';
 import fs from 'fs';
 
 /**
@@ -63,10 +62,8 @@ const generateTweetsImage = async (filePath: string): Promise<tweet.containMedia
 
 			// 顔が検出されない場合があるので確認を通す
 			if(faces.length > 0){
-				// ファイルの名前(拡張子なし)を取る(生成する画像のファイル名の決定に使う)
-				const originalImageBaseFilename = path.basename(filePath, path.extname(filePath));
 
-				const tweetContainMediaPromises = faces.map((face, currentNumber): Promise<tweet.containMedia> => {
+				const tweetContainMediaPromises = faces.map((face): Promise<tweet.containMedia> => {
 					return new Promise((resolve) => {
 						const tweetMediaList: tweet.containMedia = [];
 						// 顔の中心座標の算出
