@@ -76,8 +76,8 @@ const generateTweetsImage = async (filePath: string): Promise<tweet.containMedia
 
 						// 2枚の画像の生成を平行して実行、全部終わったら画像を `base64` エンコードしたデータが帰ってくる
 						void Promise.all([
-							SymmetryImage.make1stImage(filePath, FaceCenterCoordinate, `${originalImageBaseFilename}_${currentNumber}_1.jpg`),
-							SymmetryImage.make2ndImage(filePath, FaceCenterCoordinate, `${originalImageBaseFilename}_${currentNumber}_2.jpg`),
+							SymmetryImage.make1stImage(filePath, FaceCenterCoordinate),
+							SymmetryImage.make2ndImage(filePath, FaceCenterCoordinate),
 						])
 							.then((generateImages) => {
 								// ツイートの元画像を追加してからシンメトリー画像を突っ込む
