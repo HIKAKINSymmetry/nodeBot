@@ -9,7 +9,7 @@
  * 1枚目の画像の生成関数
  * @param {string} originalImagePath 元画像のファイルパス
  * @param {Number} symmetrylPoint シンメトリーをする軸のX座標
- * @param {string | undefined} outputFilePath 画像を出力するファイルパス
+ * @param {string | undefined} outputFilePath `optional` 画像を出力するファイルパス
  * @returns {Promise<string>} 書きだした画像のbase64エンコードしたString
  */
 const make1stImage = async (originalImagePath: string, symmetryPoint: number, outputFilePath?: string): Promise<string> => {
@@ -52,7 +52,7 @@ const make1stImage = async (originalImagePath: string, symmetryPoint: number, ou
  * 2枚目の画像の生成関数
  * @param {string} originalImagePath 元画像のファイルパス
  * @param {Number} symmetrylPoint シンメトリーをする軸のX座標
- * @param {string | undefined} outputFilePath 画像を出力するファイルパス
+ * @param {string | undefined} outputFilePath `optinal` 画像を出力するファイルパス
  * @returns {Promise<string>} 書きだした画像のbase64エンコードしたString
  */
 const make2ndImage = async (originalImagePath: string, symmetryPoint: number, outputFilePath?: string): Promise<string> => {
