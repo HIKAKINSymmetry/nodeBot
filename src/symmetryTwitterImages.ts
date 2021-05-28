@@ -5,13 +5,6 @@ import updateTwitterStatus from './modules/tweetUploader';
 import twit from 'twit';
 import fs from 'fs';
 
-// `@types/twit` が古くて `extended_entities` が入ってないので自前で入れる
-type ExtendedStatus = twit.Twitter.Status & {
-	extended_entities?: {
-		media: twit.Twitter.MediaEntity[]
-	}
-}
-
 
 const makeSymmetryTweet = async (imagePath: string) => {
 	const Tweets = await generateTweetsImage(imagePath);
@@ -68,10 +61,10 @@ const saveImages = (media: twit.Twitter.MediaEntity[]): Promise<Array<string>> =
 };
 
 /** Stream に流れてきたツイートにフィルタリングをかける
- * @param {ExtendedStatus} tw ツイートのオブジェクト
+ * @param {twit.Twitter.Status} tw ツイートのオブジェクト
  * @returns {boolean} 処理するツイートなら `True`
  */
-const filterTwitterPost = (tw: ExtendedStatus): boolean =>
+const filterTwitterPost = (tw: twit.Twitter.Status): boolean =>
 	tw.user.screen_name       === 'hikakin' && // `@hikakin` のツイート
 	tw.entities.user_mentions === []; 				 // `@Youtube` などにメンションしていない
 
@@ -95,7 +88,7 @@ const symmetryTwitterImages = (): void => {
 
 	const Stream = twitterAPI.stream('statuses/filter', {follow: [userIDs.hikakin]});
 
-	Stream.on('tweet', (Tweet: ExtendedStatus) => {
+	Stream.on('tweet', (Tweet: twit.Twitter.Status) => {
 		// メディアが入ってるなら `extended_entities` は `undefined` にはなってない
 		// なお, `Tweet` は `@hikakin` にメンションしている他の人間も入ってくるので同様にフィルタをかける
 		if(typeof Tweet.extended_entities !== 'undefined' && filterTwitterPost(Tweet)){
