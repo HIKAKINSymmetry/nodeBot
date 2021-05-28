@@ -9,10 +9,10 @@
  * 1枚目の画像の生成関数
  * @param {string} originalImagePath 元画像のファイルパス
  * @param {Number} symmetrylPoint シンメトリーをする軸のX座標
- * @param {string} outputFilePath 画像を出力するファイルパス
+ * @param {string | undefined} outputFilePath 画像を出力するファイルパス
  * @returns {Promise<string>} 書きだした画像のbase64エンコードしたString
  */
-const make1stImage = async (originalImagePath: string, symmetryPoint: number, outputFilePath: string): Promise<string> => {
+const make1stImage = async (originalImagePath: string, symmetryPoint: number, outputFilePath?: string): Promise<string> => {
 	const {Image} = require('image-js');
 	// 既存画像の読み込みはImage.load()
 	// Promise の返却が先なので `await` で待ってから次に行く(でないと書き込みのタイミングがずれてえらいことになる)
@@ -42,7 +42,8 @@ const make1stImage = async (originalImagePath: string, symmetryPoint: number, ou
 
 	// もう一度貼りつけ
 	SymmetricalImage1 = SymmetricalImage1.insert(flippedImage, {x: symmetryPoint + 10, y: 10});
-	// void SymmetricalImage1.save(outputFilePath); // シンメトリー画像を残したければこれのコメントアウトを外す
+
+	if(typeof outputFilePath !== 'undefined') void SymmetricalImage1.save(outputFilePath);
 	return await SymmetricalImage1.toBase64('image/jpeg');
 };
 
@@ -51,10 +52,10 @@ const make1stImage = async (originalImagePath: string, symmetryPoint: number, ou
  * 2枚目の画像の生成関数
  * @param {string} originalImagePath 元画像のファイルパス
  * @param {Number} symmetrylPoint シンメトリーをする軸のX座標
- * @param {string} outputFilePath 画像を出力するファイルパス
+ * @param {string | undefined} outputFilePath 画像を出力するファイルパス
  * @returns {Promise<string>} 書きだした画像のbase64エンコードしたString
  */
-const make2ndImage = async (originalImagePath: string, symmetryPoint: number, outputFilePath: string): Promise<string> => {
+const make2ndImage = async (originalImagePath: string, symmetryPoint: number, outputFilePath?: string): Promise<string> => {
 	const {Image} = require('image-js');
 	const originalImage = await Image.load(originalImagePath);
 	const originalImageDetails = {
@@ -82,7 +83,8 @@ const make2ndImage = async (originalImagePath: string, symmetryPoint: number, ou
 
 	// 右側なので投稿する画像の `width` から 切り抜かれた画像の分を減算し、更に10px分白枠があるのでその分も減らした所に貼りつける
 	SymmetricalImage2 = SymmetricalImage2.insert(croppedImage, {x: SymmetricalImage2.width - croppedImage.width - 10, y: 10});
-	// void SymmetricalImage2.save(outputFilePath); // シンメトリー画像を残したければこれのコメントアウトを外す
+
+	if(typeof outputFilePath !== 'undefined') void SymmetricalImage2.save(outputFilePath);
 	return await SymmetricalImage2.toBase64('image/jpeg');
 };
 
