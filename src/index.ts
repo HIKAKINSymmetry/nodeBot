@@ -1,9 +1,9 @@
 import Cron from 'node-cron';
 import symmetryYoutubeThumb from './symmetryYoutubeThumbs';
 import symmetryTwitterImages from './symmetryTwitterImages';
-//  [minute, hour, day, month, dayOfWeek]
-Cron.schedule('0 * * * *', () => {
-	// console.log('1時間おき実行');
+//  [seconds, minute, hour, day, month, dayOfWeek]
+Cron.schedule('0 */10 * * * *', () => {
+	// console.log('10分に1回実行');
 	void symmetryYoutubeThumb();
 });
 
