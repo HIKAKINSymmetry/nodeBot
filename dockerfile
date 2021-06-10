@@ -33,7 +33,7 @@ RUN yarn --production --frozen-lockfile
 #===============================
 # Run
 #===============================
-FROM gcr.io/distroless/nodejs:14
+FROM node:14.16.1-slim
 
 WORKDIR /usr/src/HikakinSymmetry/nodeBot
 
