@@ -42,4 +42,4 @@ COPY .envs ./.envs/
 COPY --from=Compiling /compile/dist ./dist/
 COPY --from=node_modules /modules/node_modules ./node_modules
 
-CMD ["dist/index.js"]
+CMD ["yarn", "start"]
