@@ -23,6 +23,7 @@ type youtubeDataAPIKEY = {
 type dotEnvYaml = {
 	gcpProjectName: string,
 	twitterAPI: twitterAPIKEY,
+	twitterNightlyAPI?: twitterAPIKEY,
 	youtubeDataAPI: youtubeDataAPIKEY
 }
 
