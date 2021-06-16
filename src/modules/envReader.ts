@@ -40,13 +40,15 @@ const GCPProjectID = () : string => {
 
 /**
  * TwitterのAPIアクセスに必要なデータ一式を取得
+ * develop環境の場合はそれに適したAPI Keyを渡す
  */
 const TwitterAPI = () : twitterAPIKEY => {
 	const yamlText = fs.readFileSync('.envs/env.yaml', 'utf8');
 
 	const envs = yaml.load(yamlText) as dotEnvYaml;
 
-	return envs.twitterAPI;
+	return typeof envs.twitterNightlyAPI !== 'undefined' && process.env.NODE_ENV === 'develop' ?
+		envs.twitterNightlyAPI : envs.twitterAPI;
 };
 
 /**
