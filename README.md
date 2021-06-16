@@ -59,14 +59,19 @@
 6. 発行したYoutube Data API用のAPIキーを`${ProjectRoot}/.envs/env.yaml` に記述して保存してください
 
 ## Twitter API のAPIキー作成
+
 1. https://developer.twitter.com から開発者申請をしてください Google翻訳使いまくっても問題ないです
 2. 申請が終わればStandalone Appsからプロジェクトを作成してください.
 	Permission は **Read and Write** より上で設定してください
 3. Consumerキーが発行できたら, oAuthするなり管理者のアクセストークンを作るなりで `AccessKey` と `AccessSecret` を発行してください
 4. `ConsumerKey(Secret)` , `AccessKey(Secret)` の4つを `${ProjectRoot}/.envs/env.yaml` に記述して保存してください
 
+-----------------------
+開発環境用の場合に使用するtwitterアカウントは `twitterNightlyAPI` に記述し、`yarn start:develop` で起動することでスイッチできます  
+本番デプロイするだけの場合は `twitterNightlyAPI` は消していても問題ありません  
+詳細 -> https://github.com/HIKAKINSymmetry/nodeBot/pull/34
+
 ## 認証情報の扱い
 
 GCPのサービスアカウント以外の情報は `${ProjectRoot}/.envs/env.yaml` に保存することで管理しています
 `${ProjectRoot}/env.sample.yaml` がサンプルになっているので, これに記述したのちリネームして置くといいでしょう
-
