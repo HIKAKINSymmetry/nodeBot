@@ -7,9 +7,12 @@
   "scripts": {
     "start": "node dist/index.js",
 		"start:develop": "NODE_ENV=develop ts-node --files src/index.ts",
+		"start:nightly": "NODE_ENV=develop node dist/index.js",
     "compile": "tsc",
     "lint": "eslint src/ --ext ts",
-    "lint:fix": "eslint src/ --ext ts --fix"
+    "lint:fix": "eslint src/ --ext ts --fix",
+		"build": "docker build . -t hikakinsymmetry/nodebot:latest",
+		"build:nightly": "docker build -f ./dockerfile.nightly -t hikakinsymmetry/nodebot:nightly ."
   },
   "devDependencies": {
     "typescript": "^4.3.2",
