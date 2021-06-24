@@ -47,16 +47,15 @@
 ## GCPのサービスアカウントの作成など
 
 1. GCPのプロジェクトを作成して, 各APIを有効化します
-2. GCPのプロジェクトIDを `${ProjectRoot}/.envs/env.yaml` に記述してください
-3. サービスアカウントを作成する(Firestoreへの書き込み, 読み込みが可能なロールで)
-4. サービスアカウントの鍵をJSONで発行, ダウンロードしたら `${ProjectRoot}/.envs/serviceAccount.json` の形で格納してください
-5. Youtube Data APIのみサービスアカウントでの取得ができませんので
+2. サービスアカウントを作成する(Firestoreへの書き込み, 読み込みが可能なロールで)
+3. サービスアカウントの鍵をJSONで発行, ダウンロードしたら `${ProjectRoot}/.envs/serviceAccount.json` の形で格納してください
+4. Youtube Data APIのみサービスアカウントでの取得ができませんので
 > GCPのコンソール -> APIとサービス -> Youtube Data API v3 -> 認証情報
 
 からAPIキーを発行してください.
 また, Youtube Data API以外へのアクセスをAPIキー設定から禁止することをお勧めします.
 
-6. 発行したYoutube Data API用のAPIキーを`${ProjectRoot}/.envs/env.yaml` に記述して保存してください
+5. 発行したYoutube Data API用のAPIキーを`${ProjectRoot}/.envs/env.yaml` に記述して保存してください
 
 ## Twitter API のAPIキー作成
 
