@@ -21,22 +21,10 @@ type youtubeDataAPIKEY = {
  * `.envs/env.yaml` の構造
  */
 type dotEnvYaml = {
-	gcpProjectName: string,
 	twitterAPI: twitterAPIKEY,
 	twitterNightlyAPI?: twitterAPIKEY,
 	youtubeDataAPI: youtubeDataAPIKEY
 }
-
-/**
- * GCPのプロジェクトIDを `.envs/env.yaml` から取得
- */
-const GCPProjectID = () : string => {
-	const yamlText = fs.readFileSync('.envs/env.yaml', 'utf8');
-
-	const envs = yaml.load(yamlText) as dotEnvYaml;
-
-	return envs.gcpProjectName;
-};
 
 /**
  * TwitterのAPIアクセスに必要なデータ一式を取得
@@ -62,7 +50,6 @@ const youtubeDataAPI = () : youtubeDataAPIKEY => {
 };
 
 export default {
-	GCPProjectID,
 	TwitterAPI,
 	youtubeDataAPI
 };
