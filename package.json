@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node dist/index.js",
 		"start:develop": "NODE_ENV=develop ts-node --files src/index.ts",
+		"start:nightly": "NODE_ENV=develop node dist/index.js",
     "compile": "tsc",
     "lint": "eslint src/ --ext ts",
     "lint:fix": "eslint src/ --ext ts --fix",
