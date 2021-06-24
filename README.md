@@ -70,6 +70,27 @@
 本番デプロイするだけの場合は `twitterNightlyAPI` は消していても問題ありません  
 詳細 -> https://github.com/HIKAKINSymmetry/nodeBot/pull/34
 
+## アプリケーション実行
+
+2つの手段を用意しています、お好きな手段でどうぞ。
+
+<details><summary>ローカル実行(変更が大きい方向け)</summary><div>
+  
+  1. `GOOGLE_APPLICATION_CREDENTIALS` の環境変数にサービスアカウント鍵のファイルパスを設定する。
+  
+  ```bash
+  $ export GOOGLE_APPLICATION_CREDENTIALS='./.envs/serviceAccount.json'
+  ```
+  2. `yarn start:develop` でTSのコンパイルをすっ飛ばして起動できます
+</div></details>
+
+<details><summary>dockerコンテナ内での実行(変更小さい方向け)</summary><div>
+  
+  1. 変更対象のファイルを変更する
+  2. `yarn build` でdockerイメージの構築
+  3. `docker run hikakinsymmetry/nodebot:latest` でイメージを実行
+</div></details>
+
 ## 認証情報の扱い
 
 GCPのサービスアカウント以外の情報は `${ProjectRoot}/.envs/env.yaml` に保存することで管理しています
