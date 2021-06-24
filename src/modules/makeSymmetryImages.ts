@@ -1,5 +1,4 @@
 import vision from '@google-cloud/vision';
-import EnvYaml from './envReader';
 import SymmetryImage from './generateImages';
 import fs from 'fs';
 
@@ -30,11 +29,7 @@ const detectFacesCenterCoordinate = (fdVertices: fdBoundingPoly.vertices): numbe
  * 																なければ空の配列
  */
 const generateTweetsImage = async (filePath: string): Promise<tweet.containMedia[]> => {
-	const visionAPI = new vision.ImageAnnotatorClient({
-		projectId: EnvYaml.GCPProjectID(),
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		keyFilename: `${process.env.PWD}/.envs/serviceAccount.json`
-	});
+	const visionAPI = new vision.ImageAnnotatorClient();
 
 	// `faceDetection()` は顔の識別数上限が設定不可能なので
 	// `annotateImage()` で代用

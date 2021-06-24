@@ -1,5 +1,4 @@
 import checkYoutube from './modules/checkYoutube';
-import EnvYaml from './modules/envReader';
 import {putMovies, putMovie} from './modules/DatabaseProcessor';
 import downloadImage from './modules/downloadImage';
 import generateTweetsImage from './modules/makeSymmetryImages';
@@ -91,11 +90,7 @@ const makeSymmetryTweet = async (video: DB.MovieDetail): Promise<boolean> => {
  * 要はYoutube周りのエントリーポイント
  */
 const symmetryYoutubeThumb = async (): Promise<void> => {
-	const database = new Firestore({
-		projectId: EnvYaml.GCPProjectID(),
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		keyFilename: `${process.env.PWD}/.envs/serviceAccount.json`
-	});
+	const database = new Firestore();
 	// 1件のみ取得
 	const CollectionSnapshot = await database.collection('movies').limit(1).get();
 

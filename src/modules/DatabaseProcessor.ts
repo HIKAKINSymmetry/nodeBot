@@ -1,4 +1,3 @@
-import envYaml from './envReader';
 import FireStore, { Firestore } from '@google-cloud/firestore';
 
 
@@ -8,12 +7,7 @@ import FireStore, { Firestore } from '@google-cloud/firestore';
  */
 const putMovies = (movies: Array<DB.MovieDetail>): void => {
 
-	const fireStoreCredentials: FireStore.Settings = {
-		projectId: envYaml.GCPProjectID(),
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		keyFilename: `${process.env.PWD}/.envs/serviceAccount.json`
-	};
-	const database = new Firestore(fireStoreCredentials);
+	const database = new Firestore();
 
 	movies.forEach((movieInfo) => {
 		console.log(`データベースに記述中 : ${movieInfo.videoId}/${movieInfo.title} `);
@@ -27,11 +21,7 @@ const putMovies = (movies: Array<DB.MovieDetail>): void => {
  */
 const putMovie = (movie: DB.MovieDetail): void => {
 
-	const fireStoreCredentials: FireStore.Settings = {
-		projectId: envYaml.GCPProjectID(),
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		keyFilename: `${process.env.PWD}/.envs/serviceAccount.json`
-	};
+	const fireStoreCredentials: FireStore.Settings = {};
 	const database = new Firestore(fireStoreCredentials);
 
 	console.log(`データベースに記述中 : ${movie.videoId}/${movie.title} `);
