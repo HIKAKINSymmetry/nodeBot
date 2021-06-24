@@ -42,4 +42,6 @@ COPY .envs ./.envs/
 COPY --from=Compiling /compile/dist ./dist/
 COPY --from=node_modules /modules/node_modules ./node_modules
 
+ENV GOOGLE_APPLICATION_CREDENTIALS='/usr/src/HikakinSymmetry/nodeBot/.envs/serviceAccount.json'
+
 CMD ["yarn", "start:nightly"]
