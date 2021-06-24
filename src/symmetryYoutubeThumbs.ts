@@ -9,6 +9,7 @@ import FireStore, { Firestore } from '@google-cloud/firestore';
 import moment from 'moment';
 import fs from 'fs';
 
+const collectionName = process.env.NODE_ENV === 'develop' ? 'nightly_movies' : 'movies';
 /**
  * YoutubeのAPIを叩いてまだ処理されていない動画を検索する
  * @param {FireStore.Firestore} db DBのインスタンス
@@ -22,7 +23,7 @@ const findHaventProcessedVideo = async (db: FireStore.Firestore) : Promise<DB.Mo
 
 	for(const playlist of Playlists){
 		for(const video of playlist){
-			const queryAccess = await db.collection('movies').where('videoId', '==', video.videoId).get();
+			const queryAccess = await db.collection(collectionName).where('videoId', '==', video.videoId).get();
 			if(queryAccess.empty) haventProcessedVideos.push(video);
 		}
 	}
@@ -92,7 +93,7 @@ const makeSymmetryTweet = async (video: DB.MovieDetail): Promise<boolean> => {
 const symmetryYoutubeThumb = async (): Promise<void> => {
 	const database = new Firestore();
 	// 1件のみ取得
-	const CollectionSnapshot = await database.collection('movies').limit(1).get();
+	const CollectionSnapshot = await database.collection(collectionName).limit(1).get();
 
 	if(CollectionSnapshot.empty){
 		// データベースに何も入ってないので初期化的にデータを追加する

@@ -1,5 +1,6 @@
 import FireStore, { Firestore } from '@google-cloud/firestore';
 
+const collectionName = process.env.NODE_ENV === 'develop' ? 'nightly_movies' : 'movies';
 
 /**
  * 1プレイリスト内の動画の情報をFirebaseに送信する
@@ -11,7 +12,7 @@ const putMovies = (movies: Array<DB.MovieDetail>): void => {
 
 	movies.forEach((movieInfo) => {
 		console.log(`データベースに記述中 : ${movieInfo.videoId}/${movieInfo.title} `);
-		void database.collection('movies').doc().set(movieInfo);
+		void database.collection(collectionName).doc().set(movieInfo);
 	});
 };
 
@@ -25,7 +26,7 @@ const putMovie = (movie: DB.MovieDetail): void => {
 	const database = new Firestore(fireStoreCredentials);
 
 	console.log(`データベースに記述中 : ${movie.videoId}/${movie.title} `);
-	void database.collection('movies').doc().set(movie);
+	void database.collection(collectionName).doc().set(movie);
 
 };
 
