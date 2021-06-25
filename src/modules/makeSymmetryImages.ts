@@ -60,7 +60,6 @@ const generateTweetsImage = async (filePath: string): Promise<tweet.containMedia
 
 				const tweetContainMediaPromises = faces.map((face): Promise<tweet.containMedia> => {
 					return new Promise((resolve) => {
-						const tweetMediaList: tweet.containMedia = [];
 						// 顔の中心座標の算出
 						const FaceCenterCoordinate = detectFacesCenterCoordinate(
 							face.fdBoundingPoly?.vertices as fdBoundingPoly.vertices
@@ -72,10 +71,8 @@ const generateTweetsImage = async (filePath: string): Promise<tweet.containMedia
 							SymmetryImage.make2ndImage(filePath, FaceCenterCoordinate),
 						])
 							.then((generateImages) => {
-								// ツイートの元画像を追加してからシンメトリー画像を突っ込む
-								tweetMediaList.push(encodedOriginalImage);
-								generateImages.forEach((generateImageEncodedData) => tweetMediaList.push(generateImageEncodedData));
-								resolve(tweetMediaList);
+								// ツイートの元画像を追加してからシンメトリー画像を突っ込む(順番そのままツイートに反映されるため)
+								resolve([encodedOriginalImage, ...generateImages]);
 							});
 
 					});
