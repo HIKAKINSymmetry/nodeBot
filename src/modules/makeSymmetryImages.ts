@@ -71,9 +71,8 @@ const generateTweetsImage = async (filePath: string): Promise<tweet.containMedia
 							SymmetryImage.make2ndImage(filePath, FaceCenterCoordinate),
 						])
 							.then((generateImages) => {
-								// ツイートの元画像を追加してからシンメトリー画像を突っ込む
-								const tweetMediaList: tweet.containMedia = [encodedOriginalImage, ...generateImages];
-								resolve(tweetMediaList);
+								// ツイートの元画像を追加してからシンメトリー画像を突っ込む(順番そのままツイートに反映されるため)
+								resolve([encodedOriginalImage, ...generateImages]);
 							});
 
 					});
